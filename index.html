@@ -237,15 +237,19 @@
             storageBucket: "b-b-a-1a517.firebasestorage.app",
             messagingSenderId: "1062720839563",
             appId: "1:1062720839563:web:e52bc9ddff4d7659d1598e",
-            measurementId: "G-T29LF7EV6W",
             databaseURL: "https://b-b-a-1a517-default-rtdb.firebaseio.com/"
         };
+
+        // Safe Firebase init
+        let firebaseReady = false;
         try {
             firebase.initializeApp(firebaseConfig);
+            firebaseReady = true;
         } catch (e) {
             document.body.innerHTML = '<div class="flex items-center justify-center h-screen"><p class="text-red-600 font-bold text-xl">فشل الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.</p></div>';
-            throw new Error("Firebase init failed");
+            throw new Error('Firebase init failed');
         }
+
         const auth = firebase.auth();
         const db = firebase.database();
         const storage = firebase.storage();
@@ -328,8 +332,8 @@
         let reportsListenerUnsub = null;
         let mapReady = false;
         let searchQuery = '';
-        let sortMode = 'newest'; // newest, nearest, confirmed
-        let maxDistance = 10; // km
+        let sortMode = 'newest';
+        let maxDistance = 10;
         let lastData = {};
 
         const LIBYA_BOUNDS = [[19.5, 9.4], [33.2, 25.2]];
@@ -345,6 +349,7 @@
         // ====================== UTILITIES ======================
         function showToast(msg, isErr = false) {
             const t = document.getElementById('toast');
+            if (!t) return;
             t.textContent = msg;
             t.className = `fixed bottom-24 left-1/2 -translate-x-1/2 bg-${isErr ? 'red-600' : 'black/85'} text-white px-5 py-2 rounded-full text-sm z-[1000] transition-all`;
             t.classList.remove('hidden');
@@ -362,20 +367,26 @@
             if (enable) {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
-                document.getElementById('darkIcon').textContent = '☀️';
-                document.getElementById('settingsToggleCircle').style.transform = 'translateX(1.5rem)';
+                const darkIcon = document.getElementById('darkIcon');
+                if (darkIcon) darkIcon.textContent = '☀️';
+                const toggleCircle = document.getElementById('settingsToggleCircle');
+                if (toggleCircle) toggleCircle.style.transform = 'translateX(1.5rem)';
             } else {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
-                document.getElementById('darkIcon').textContent = '🌙';
-                document.getElementById('settingsToggleCircle').style.transform = 'translateX(0)';
+                const darkIcon = document.getElementById('darkIcon');
+                if (darkIcon) darkIcon.textContent = '🌙';
+                const toggleCircle = document.getElementById('settingsToggleCircle');
+                if (toggleCircle) toggleCircle.style.transform = 'translateX(0)';
             }
         }
         function toggleDarkMode() {
             setDarkMode(!document.documentElement.classList.contains('dark'));
         }
-        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-        document.getElementById('settingsDarkToggle').addEventListener('click', toggleDarkMode);
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
+        const settingsDarkToggle = document.getElementById('settingsDarkToggle');
+        if (settingsDarkToggle) settingsDarkToggle.addEventListener('click', toggleDarkMode);
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             setDarkMode(true);
@@ -392,17 +403,33 @@
 
         // ---------- WEATHER ----------
         async function fetchWeather(lat, lon) {
+            const widget = document.getElementById('weatherWidget');
+            if (!widget) return;
             try {
                 const API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // استبدل بمفتاحك
+                if (API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
+                    // Show static fallback
+                    widget.classList.remove('hidden');
+                    return;
+                }
                 const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=ar`);
                 if (!res.ok) throw new Error('Weather fetch failed');
                 const data = await res.json();
-                document.getElementById('weatherTemp').textContent = Math.round(data.main.temp) + '°C';
-                document.getElementById('weatherDesc').textContent = data.weather[0].description;
-                document.getElementById('weatherWidget').classList.remove('hidden');
+                widget.innerHTML = `<div class="flex items-center gap-2"><span class="text-xl">${getWeatherEmoji(data.weather[0].id)}</span><div><span class="font-bold">${Math.round(data.main.temp)}°C</span><br/><span class="text-gray-500">${data.weather[0].description}</span></div></div>`;
+                widget.classList.remove('hidden');
             } catch(e) {
-                document.getElementById('weatherWidget').classList.add('hidden');
+                widget.classList.add('hidden');
             }
+        }
+        function getWeatherEmoji(id) {
+            if (id >= 200 && id < 300) return '⛈️';
+            if (id >= 300 && id < 500) return '🌧️';
+            if (id >= 500 && id < 600) return '🌧️';
+            if (id >= 600 && id < 700) return '❄️';
+            if (id >= 700 && id < 800) return '🌫️';
+            if (id === 800) return '☀️';
+            if (id > 800) return '⛅';
+            return '🌤️';
         }
 
         // ---------- BOOKMARKS ----------
@@ -417,22 +444,30 @@
 
         // ====================== AUTH ======================
         const authModal = document.getElementById('authModal');
-        function showAuthModal() { authModal.classList.remove('hidden'); authModal.classList.add('flex'); }
-        function hideAuthModal() { authModal.classList.add('hidden'); authModal.classList.remove('flex'); }
-        document.getElementById('closeAuthModal').onclick = hideAuthModal;
-        document.getElementById('googleSignInBtn').onclick = async () => { try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); hideAuthModal(); } catch { showToast('خطأ', true); } };
-        document.getElementById('signInBtn').onclick = async () => {
-            const e = document.getElementById('authEmail').value, p = document.getElementById('authPassword').value;
-            try { await auth.signInWithEmailAndPassword(e,p); hideAuthModal(); } catch { showToast('بيانات خاطئة', true); }
+        function showAuthModal() { if (authModal) { authModal.classList.remove('hidden'); authModal.classList.add('flex'); } }
+        function hideAuthModal() { if (authModal) { authModal.classList.add('hidden'); authModal.classList.remove('flex'); } }
+        const closeAuthModal = document.getElementById('closeAuthModal');
+        if (closeAuthModal) closeAuthModal.onclick = hideAuthModal;
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        if (googleSignInBtn) googleSignInBtn.onclick = async () => {
+            try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); hideAuthModal(); } catch { showToast('خطأ في تسجيل الدخول', true); }
         };
-        document.getElementById('signUpBtn').onclick = async () => {
-            const e = document.getElementById('authEmail').value, p = document.getElementById('authPassword').value;
-            try { await auth.createUserWithEmailAndPassword(e,p); hideAuthModal(); } catch { showToast('خطأ إنشاء الحساب', true); }
+        const signInBtn = document.getElementById('signInBtn');
+        if (signInBtn) signInBtn.onclick = async () => {
+            const email = document.getElementById('authEmail')?.value, pass = document.getElementById('authPassword')?.value;
+            try { await auth.signInWithEmailAndPassword(email, pass); hideAuthModal(); } catch { showToast('بيانات خاطئة', true); }
         };
-        document.getElementById('authForm').addEventListener('submit', e => e.preventDefault());
+        const signUpBtn = document.getElementById('signUpBtn');
+        if (signUpBtn) signUpBtn.onclick = async () => {
+            const email = document.getElementById('authEmail')?.value, pass = document.getElementById('authPassword')?.value;
+            try { await auth.createUserWithEmailAndPassword(email, pass); hideAuthModal(); } catch { showToast('خطأ إنشاء الحساب', true); }
+        };
+        const authForm = document.getElementById('authForm');
+        if (authForm) authForm.addEventListener('submit', e => e.preventDefault());
 
         function updateAuthUI() {
             const btn = document.getElementById('authBtn');
+            if (!btn) return;
             if (currentUser) { btn.textContent = currentUser.displayName || currentUser.email?.split('@')[0] || 'حسابي'; btn.onclick = () => logout(); }
             else { btn.textContent = 'دخول'; btn.onclick = showAuthModal; }
         }
@@ -483,11 +518,15 @@
             btn.addEventListener('click', () => navigateTo(btn.dataset.nav));
         });
 
-        document.getElementById('settingsBtn').onclick = () => {
-            document.getElementById('settingsModal').classList.remove('hidden');
+        const settingsBtn = document.getElementById('settingsBtn');
+        if (settingsBtn) settingsBtn.onclick = () => {
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) settingsModal.classList.remove('hidden');
         };
-        document.getElementById('closeSettingsModal').onclick = () => {
-            document.getElementById('settingsModal').classList.add('hidden');
+        const closeSettingsModal = document.getElementById('closeSettingsModal');
+        if (closeSettingsModal) closeSettingsModal.onclick = () => {
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal) settingsModal.classList.add('hidden');
         };
 
         // ====================== MAP ======================
@@ -498,8 +537,6 @@
 
             map = L.map('mapContainer', {
                 zoomControl: false,
-                maxBounds: LIBYA_BOUNDS,
-                maxBoundsViscosity: 0.3,
                 minZoom: 5,
                 maxZoom: 18
             }).setView([32.8872, 13.1913], 8);
@@ -519,21 +556,24 @@
             });
 
             const filterContainer = document.getElementById('filterButtonsContainer');
-            REPORT_TYPES.forEach(t => {
-                const btn = document.createElement('button');
-                btn.className = `filter-btn bg-white dark:bg-gray-700 px-3 py-1 rounded-full text-xs font-semibold shadow ${activeFilters.includes(t.id) ? 'active' : ''}`;
-                btn.textContent = t.label;
-                btn.dataset.filter = t.id;
-                btn.onclick = () => {
-                    if (activeFilters.includes(t.id)) activeFilters = activeFilters.filter(f => f !== t.id);
-                    else activeFilters.push(t.id);
-                    btn.classList.toggle('active');
-                    updateMapFromData();
-                };
-                filterContainer.appendChild(btn);
-            });
+            if (filterContainer) {
+                REPORT_TYPES.forEach(t => {
+                    const btn = document.createElement('button');
+                    btn.className = `filter-btn bg-white dark:bg-gray-700 px-3 py-1 rounded-full text-xs font-semibold shadow ${activeFilters.includes(t.id) ? 'active' : ''}`;
+                    btn.textContent = t.label;
+                    btn.dataset.filter = t.id;
+                    btn.onclick = () => {
+                        if (activeFilters.includes(t.id)) activeFilters = activeFilters.filter(f => f !== t.id);
+                        else activeFilters.push(t.id);
+                        btn.classList.toggle('active');
+                        updateMapFromData();
+                    };
+                    filterContainer.appendChild(btn);
+                });
+            }
 
-            document.getElementById('locateBtn').onclick = () => {
+            const locateBtn = document.getElementById('locateBtn');
+            if (locateBtn) locateBtn.onclick = () => {
                 navigator.geolocation.getCurrentPosition(pos => {
                     const { latitude, longitude } = pos.coords;
                     map.setView([latitude, longitude], 15);
@@ -542,7 +582,8 @@
                 });
             };
 
-            document.getElementById('exploreBtn').onclick = () => {
+            const exploreBtn = document.getElementById('exploreBtn');
+            if (exploreBtn) exploreBtn.onclick = () => {
                 const city = LIBYAN_CITIES[Math.floor(Math.random() * LIBYAN_CITIES.length)];
                 map.flyTo([city.lat, city.lng], 13, { duration: 2 });
                 const popup = L.popup({ closeButton: true, autoClose: true, closeOnEscapeKey: true })
@@ -551,7 +592,8 @@
                     .openOn(map);
             };
 
-            document.getElementById('randomStreetBtn').onclick = () => {
+            const randomStreetBtn = document.getElementById('randomStreetBtn');
+            if (randomStreetBtn) randomStreetBtn.onclick = () => {
                 const street = TRIPOLI_STREETS[Math.floor(Math.random() * TRIPOLI_STREETS.length)];
                 map.flyTo([street.lat, street.lng], 16, { duration: 1.5 });
                 const popup = L.popup({ closeButton: true, autoClose: true, closeOnEscapeKey: true })
@@ -560,9 +602,10 @@
                     .openOn(map);
             };
 
-            document.getElementById('fullscreenBtn').onclick = () => {
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            if (fullscreenBtn) fullscreenBtn.onclick = () => {
                 const el = document.getElementById('mapWrapper');
-                if (el.requestFullscreen) el.requestFullscreen();
+                if (el && el.requestFullscreen) el.requestFullscreen();
             };
 
             map.on('zoomend', updateMapFromData);
@@ -572,6 +615,7 @@
         }
 
         function shouldShowReport(r) {
+            if (!map) return true;
             if (map.getZoom() < 12 && (r.confirmCount || 0) === 0) return false;
             return true;
         }
@@ -651,6 +695,7 @@
         }
 
         function updateMapFromData() {
+            if (!clusterGroup || !heatLayer) return;
             clusterGroup.clearLayers();
             heatLayer.setLatLngs([]);
             const heatPoints = [];
@@ -682,19 +727,30 @@
                 </div>`).join('') : '<div class="text-center p-8 text-gray-500">لا توجد بلاغات نشطة</div>';
         }
 
-        // Sort and distance UI
-        document.getElementById('sortBtn').addEventListener('click', () => {
-            const modes = ['newest', 'nearest', 'confirmed'];
-            const idx = modes.indexOf(sortMode);
-            sortMode = modes[(idx + 1) % modes.length];
-            document.getElementById('sortBtn').textContent = '↓↑ ' + (sortMode === 'newest' ? 'الأحدث' : sortMode === 'nearest' ? 'الأقرب' : 'الأكثر تأكيداً');
-            document.getElementById('distanceFilter').style.display = sortMode === 'nearest' ? 'block' : 'none';
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
             stopReportsListener();
             startReportsListener();
         });
-        document.getElementById('distSlider').addEventListener('input', (e) => {
+
+        // Sort and distance UI
+        const sortBtn = document.getElementById('sortBtn');
+        if (sortBtn) sortBtn.addEventListener('click', () => {
+            const modes = ['newest', 'nearest', 'confirmed'];
+            const idx = modes.indexOf(sortMode);
+            sortMode = modes[(idx + 1) % modes.length];
+            sortBtn.textContent = '↓↑ ' + (sortMode === 'newest' ? 'الأحدث' : sortMode === 'nearest' ? 'الأقرب' : 'الأكثر تأكيداً');
+            const distFilter = document.getElementById('distanceFilter');
+            if (distFilter) distFilter.style.display = sortMode === 'nearest' ? 'block' : 'none';
+            stopReportsListener();
+            startReportsListener();
+        });
+        const distSlider = document.getElementById('distSlider');
+        if (distSlider) distSlider.addEventListener('input', (e) => {
             maxDistance = parseInt(e.target.value);
-            document.getElementById('distValue').textContent = maxDistance;
+            const distValue = document.getElementById('distValue');
+            if (distValue) distValue.textContent = maxDistance;
             stopReportsListener();
             startReportsListener();
         });
@@ -722,13 +778,15 @@
         }
 
         // ====================== RANDOM REPORT ======================
-        document.getElementById('randomReportBtn').onclick = () => {
+        const randomReportBtn = document.getElementById('randomReportBtn');
+        if (randomReportBtn) randomReportBtn.onclick = () => {
             if (cachedReports.length === 0) return showToast('لا توجد بلاغات', true);
             const [id, report] = cachedReports[Math.floor(Math.random() * cachedReports.length)];
             openReportDetail(id, report);
         };
 
-        document.getElementById('factBtn').onclick = () => {
+        const factBtn = document.getElementById('factBtn');
+        if (factBtn) factBtn.onclick = () => {
             const fact = LIBYA_FACTS[Math.floor(Math.random() * LIBYA_FACTS.length)];
             showToast(fact);
         };
@@ -745,9 +803,12 @@
 
         function renderReportDetail(id, r) {
             const modal = document.getElementById('reportDetailModal');
+            if (!modal) return;
             const shareUrl = `${window.location.origin}${window.location.pathname}?report=${id}`;
             const isOwner = currentUser && r.userId === currentUser.uid;
-            document.getElementById('detailContent').innerHTML = `
+            const detailContent = document.getElementById('detailContent');
+            if (!detailContent) return;
+            detailContent.innerHTML = `
                 <div class="space-y-4">
                     ${r.imageUrl ? `<img src="${r.imageUrl}" class="rounded-xl w-full h-48 object-cover" />` : ''}
                     <div class="flex justify-between"><h2 class="text-xl font-bold">${r.title}</h2><span class="text-sm bg-gray-200 dark:bg-gray-700 px-2 rounded">${typeMap[r.type]?.label}</span></div>
@@ -767,13 +828,17 @@
                     <button id="postComment" class="bg-blue-600 text-white px-4 py-1 rounded mt-1">نشر</button></div>
                 </div>`;
             modal.classList.remove('hidden');
-            document.getElementById('closeDetailModal').onclick = () => modal.classList.add('hidden');
+            const closeDetailModal = document.getElementById('closeDetailModal');
+            if (closeDetailModal) closeDetailModal.onclick = () => modal.classList.add('hidden');
             loadComments(id);
-            document.getElementById('postComment').onclick = () => {
-                const text = document.getElementById('newComment').value.trim();
+            const postCommentBtn = document.getElementById('postComment');
+            if (postCommentBtn) postCommentBtn.onclick = () => {
+                const newComment = document.getElementById('newComment');
+                if (!newComment) return;
+                const text = newComment.value.trim();
                 if (!text || !currentUser) return;
                 db.ref(`reports/${id}/comments`).push({ userId: currentUser.uid, displayName: currentUser.displayName || 'مستخدم', text, timestamp: Date.now() });
-                document.getElementById('newComment').value = '';
+                newComment.value = '';
             };
             document.querySelectorAll('.confirmBtn').forEach(b => b.onclick = () => { if(currentUser) db.ref(`reports/${id}/confirmCount`).transaction(c=>(c||0)+1); });
             document.querySelectorAll('.denyBtn').forEach(b => b.onclick = () => { if(currentUser) db.ref(`reports/${id}/denyCount`).transaction(c=>(c||0)+1); });
@@ -789,10 +854,8 @@
             });
         }
 
-        // Edit & Delete helpers
         window.editReport = function(reportId) {
             if (!currentUser) return;
-            // مثال بسيط: يمكنك التوسع لاحقاً
             const newTitle = prompt('عنوان جديد:', '');
             if (newTitle) {
                 db.ref(`reports/${reportId}/title`).set(newTitle).then(() => showToast('تم التعديل'));
@@ -804,7 +867,8 @@
                 if (snap.val() === 'admin' || confirm('هل أنت متأكد من حذف البلاغ؟')) {
                     db.ref(`reports/${reportId}`).remove().then(() => {
                         showToast('تم الحذف');
-                        document.getElementById('reportDetailModal').classList.add('hidden');
+                        const modal = document.getElementById('reportDetailModal');
+                        if (modal) modal.classList.add('hidden');
                     });
                 }
             });
@@ -815,135 +879,138 @@
         function renderSubmitForm() {
             if (!currentUser) { showAuthModal(); return; }
             const container = document.getElementById('submitFormContainer');
-            if (!submitFormBuilt) {
-                container.innerHTML = `
-                    <h2 class="text-2xl font-bold mb-4">📢 إبلاغ جديد</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">نوع البلاغ</label>
-                            <select id="typeSelect" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
-                                ${REPORT_TYPES.map(t => `<option value="${t.id}">${t.label}</option>`).join('')}
-                            </select>
+            if (!container || submitFormBuilt) return;
+            container.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4">📢 إبلاغ جديد</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">نوع البلاغ</label>
+                        <select id="typeSelect" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
+                            ${REPORT_TYPES.map(t => `<option value="${t.id}">${t.label}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="statusGroup" class="hidden">
+                        <label class="block text-sm font-semibold mb-1">الحالة</label>
+                        <div class="flex gap-4 mt-1">
+                            <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="available"> 🟢 متوفر</label>
+                            <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="unavailable"> 🔴 مفقود</label>
                         </div>
-                        <div id="statusGroup" class="hidden">
-                            <label class="block text-sm font-semibold mb-1">الحالة</label>
-                            <div class="flex gap-4 mt-1">
-                                <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="available"> 🟢 متوفر</label>
-                                <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="unavailable"> 🔴 مفقود</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">عنوان البلاغ</label>
-                            <input id="titleInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder="مثال: بنزين متوفر في محطة الصريم" maxlength="60" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">الوصف</label>
-                            <textarea id="descInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" rows="3" placeholder="تفاصيل أكثر..." required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">اختر الموقع على الخريطة</label>
-                            <div id="miniMapPick" style="height:200px; border-radius:16px;" class="border dark:border-gray-600"></div>
-                            <button type="button" id="useMyLocationBtn" class="mt-2 text-sm text-blue-600 underline">📍 استخدم موقعي الحالي</button>
-                            <input type="hidden" id="latPick" value="32.8872">
-                            <input type="hidden" id="lngPick" value="13.1913">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">صورة (اختياري)</label>
-                            <input type="file" id="reportImage" accept="image/*" class="block w-full text-sm">
-                            <img id="imagePreview" class="mt-2 hidden h-32 w-full object-cover rounded-xl" />
-                        </div>
-                        <button id="submitReportBtn" class="w-full bg-gradient-to-r from-red-600 to-red-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition">إرسال البلاغ</button>
-                    </div>`;
-                submitFormBuilt = true;
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">عنوان البلاغ</label>
+                        <input id="titleInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder="مثال: بنزين متوفر في محطة الصريم" maxlength="60" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">الوصف</label>
+                        <textarea id="descInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" rows="3" placeholder="تفاصيل أكثر..." required></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">اختر الموقع على الخريطة</label>
+                        <div id="miniMapPick" style="height:200px; border-radius:16px;" class="border dark:border-gray-600"></div>
+                        <button type="button" id="useMyLocationBtn" class="mt-2 text-sm text-blue-600 underline">📍 استخدم موقعي الحالي</button>
+                        <input type="hidden" id="latPick" value="32.8872">
+                        <input type="hidden" id="lngPick" value="13.1913">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">صورة (اختياري)</label>
+                        <input type="file" id="reportImage" accept="image/*" class="block w-full text-sm">
+                        <img id="imagePreview" class="mt-2 hidden h-32 w-full object-cover rounded-xl" />
+                    </div>
+                    <button id="submitReportBtn" class="w-full bg-gradient-to-r from-red-600 to-red-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition">إرسال البلاغ</button>
+                </div>`;
+            submitFormBuilt = true;
 
-                const miniMap = L.map('miniMapPick', { maxBounds: LIBYA_BOUNDS, maxBoundsViscosity: 0.3, minZoom: 6 }).setView([32.8872, 13.1913], 8);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(miniMap);
-                const marker = L.marker([32.8872, 13.1913], { draggable: true }).addTo(miniMap);
-                marker.on('dragend', () => {
-                    const p = marker.getLatLng();
-                    document.getElementById('latPick').value = p.lat;
-                    document.getElementById('lngPick').value = p.lng;
+            const miniMap = L.map('miniMapPick', { minZoom: 6 }).setView([32.8872, 13.1913], 8);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(miniMap);
+            const marker = L.marker([32.8872, 13.1913], { draggable: true }).addTo(miniMap);
+            marker.on('dragend', () => {
+                const p = marker.getLatLng();
+                document.getElementById('latPick').value = p.lat;
+                document.getElementById('lngPick').value = p.lng;
+            });
+            const useMyLocationBtn = document.getElementById('useMyLocationBtn');
+            if (useMyLocationBtn) useMyLocationBtn.onclick = () => {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const { latitude, longitude } = pos.coords;
+                    miniMap.setView([latitude, longitude], 13);
+                    marker.setLatLng([latitude, longitude]);
+                    document.getElementById('latPick').value = latitude;
+                    document.getElementById('lngPick').value = longitude;
                 });
-                document.getElementById('useMyLocationBtn').onclick = () => {
-                    navigator.geolocation.getCurrentPosition(pos => {
-                        const { latitude, longitude } = pos.coords;
-                        miniMap.setView([latitude, longitude], 13);
-                        marker.setLatLng([latitude, longitude]);
-                        document.getElementById('latPick').value = latitude;
-                        document.getElementById('lngPick').value = longitude;
-                    });
-                };
-                const typeSelect = document.getElementById('typeSelect');
-                const statusGroup = document.getElementById('statusGroup');
-                typeSelect.addEventListener('change', () => {
-                    statusGroup.classList.toggle('hidden', !typeMap[typeSelect.value]?.needsStatus);
-                });
-                document.getElementById('reportImage').addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    const preview = document.getElementById('imagePreview');
+            };
+            const typeSelect = document.getElementById('typeSelect');
+            const statusGroup = document.getElementById('statusGroup');
+            if (typeSelect && statusGroup) typeSelect.addEventListener('change', () => {
+                statusGroup.classList.toggle('hidden', !typeMap[typeSelect.value]?.needsStatus);
+            });
+            const reportImage = document.getElementById('reportImage');
+            if (reportImage) reportImage.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const preview = document.getElementById('imagePreview');
+                if (!preview) return;
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = ev => { preview.src = ev.target.result; preview.classList.remove('hidden'); };
+                    reader.readAsDataURL(file);
+                } else preview.classList.add('hidden');
+            });
+
+            const submitReportBtn = document.getElementById('submitReportBtn');
+            if (submitReportBtn) submitReportBtn.addEventListener('click', async () => {
+                const type = typeSelect?.value;
+                const title = document.getElementById('titleInput')?.value.trim();
+                const description = document.getElementById('descInput')?.value.trim();
+                if (!title || !description) return showToast('يرجى ملء جميع الحقول', true);
+                if (title.length < 3) return showToast('العنوان قصير جداً', true);
+                
+                let statusValue = null;
+                if (typeMap[type]?.needsStatus) {
+                    const sel = document.querySelector('input[name="statusVal"]:checked');
+                    if (!sel) return showToast('يرجى اختيار الحالة', true);
+                    statusValue = sel.value;
+                }
+                const lat = parseFloat(document.getElementById('latPick')?.value || 32.8872);
+                const lng = parseFloat(document.getElementById('lngPick')?.value || 13.1913);
+                const file = reportImage?.files[0];
+                let imageUrl = null;
+                
+                try {
                     if (file) {
-                        const reader = new FileReader();
-                        reader.onload = ev => { preview.src = ev.target.result; preview.classList.remove('hidden'); };
-                        reader.readAsDataURL(file);
-                    } else preview.classList.add('hidden');
-                });
-
-                // ربط الزر مباشرة
-                document.getElementById('submitReportBtn').addEventListener('click', async () => {
-                    const type = typeSelect.value;
-                    const title = document.getElementById('titleInput').value.trim();
-                    const description = document.getElementById('descInput').value.trim();
-                    if (!title || !description) return showToast('يرجى ملء جميع الحقول', true);
-                    if (title.length < 3) return showToast('العنوان قصير جداً', true);
-                    
-                    let statusValue = null;
-                    if (typeMap[type].needsStatus) {
-                        const sel = document.querySelector('input[name="statusVal"]:checked');
-                        if (!sel) return showToast('يرجى اختيار الحالة', true);
-                        statusValue = sel.value;
+                        const storageRef = storage.ref(`reports/${Date.now()}_${file.name}`);
+                        await storageRef.put(file);
+                        imageUrl = await storageRef.getDownloadURL();
                     }
-                    const lat = parseFloat(document.getElementById('latPick').value);
-                    const lng = parseFloat(document.getElementById('lngPick').value);
-                    const file = document.getElementById('reportImage').files[0];
-                    let imageUrl = null;
-                    
-                    try {
-                        if (file) {
-                            const storageRef = storage.ref(`reports/${Date.now()}_${file.name}`);
-                            await storageRef.put(file);
-                            imageUrl = await storageRef.getDownloadURL();
-                        }
-                        const expiresAt = Date.now() + (EXPIRE_DURATIONS[type] || 7200000);
-                        const newReportRef = db.ref('reports').push();
-                        await newReportRef.set({
-                            userId: currentUser.uid,
-                            type, title, description,
-                            latitude: lat, longitude: lng,
-                            confirmCount: 0, denyCount: 0,
-                            createdAt: Date.now(),
-                            expiresAt,
-                            status: 'active',
-                            statusValue,
-                            imageUrl
-                        });
-                        db.ref('stats/reportsCount').transaction(c => (c || 0) + 1);
-                        showToast('✅ تم إرسال البلاغ بنجاح');
-                        setTimeout(() => {
-                            if (mapReady) map.setView([lat, lng], 15);
-                            navigateTo('map');
-                        }, 1000);
-                    } catch (err) {
-                        console.error('Submit error:', err);
-                        showToast('فشل الإرسال. تأكد من قواعد Firebase', true);
-                    }
-                });
-            }
+                    const expiresAt = Date.now() + (EXPIRE_DURATIONS[type] || 7200000);
+                    const newReportRef = db.ref('reports').push();
+                    await newReportRef.set({
+                        userId: currentUser.uid,
+                        type, title, description,
+                        latitude: lat, longitude: lng,
+                        confirmCount: 0, denyCount: 0,
+                        createdAt: Date.now(),
+                        expiresAt,
+                        status: 'active',
+                        statusValue,
+                        imageUrl
+                    });
+                    db.ref('stats/reportsCount').transaction(c => (c || 0) + 1);
+                    showToast('✅ تم إرسال البلاغ بنجاح');
+                    setTimeout(() => {
+                        if (mapReady) map.setView([lat, lng], 15);
+                        navigateTo('map');
+                    }, 1000);
+                } catch (err) {
+                    console.error('Submit error:', err);
+                    showToast('فشل الإرسال. تأكد من قواعد Firebase', true);
+                }
+            });
         }
 
         // ====================== PROFILE PAGE ======================
         async function renderProfile() {
             if (!currentUser) { showAuthModal(); return; }
             const container = document.getElementById('profileContainer');
+            if (!container) return;
             try {
                 const userSnap = await db.ref(`users/${currentUser.uid}`).once('value');
                 const profile = (userSnap.exists() && userSnap.val()) ? userSnap.val() : { info: {} };
@@ -962,7 +1029,8 @@
                         <div class="card glass p-4 rounded-2xl"><span class="block text-3xl font-black">${myCount}</span>بلاغاتي</div>
                         <div class="card glass p-4 rounded-2xl"><span class="block text-3xl font-black">${profile.reputation||0}</span>السمعة</div>
                     </div>`;
-                document.getElementById('logoutBtn').onclick = logout;
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) logoutBtn.onclick = logout;
             } catch (err) {
                 console.error(err);
                 container.innerHTML = '<p class="text-red-500">خطأ في تحميل الملف الشخصي</p>';
@@ -970,14 +1038,15 @@
         }
 
         window.uploadProfilePic = async function() {
-            const file = document.getElementById('picUpload').files[0];
+            const file = document.getElementById('picUpload')?.files[0];
             if (!file || !currentUser) return;
             const storageRef = storage.ref(`profiles/${currentUser.uid}_${Date.now()}`);
             try {
                 await storageRef.put(file);
                 const url = await storageRef.getDownloadURL();
                 await db.ref(`users/${currentUser.uid}/info/photoURL`).set(url);
-                document.querySelector('#profileContainer img').src = url;
+                const img = document.querySelector('#profileContainer img');
+                if (img) img.src = url;
                 showToast('تم تحديث الصورة');
             } catch (e) {
                 showToast('فشل رفع الصورة', true);
@@ -989,8 +1058,10 @@
             if (!currentUser) { showAuthModal(); return; }
             if (dashboardChart) { dashboardChart.destroy(); dashboardChart = null; }
             const statsDiv = document.getElementById('dashboardStats');
+            if (!statsDiv) return;
             statsDiv.innerHTML = '<div class="col-span-4 text-center">جاري التحميل...</div>';
-            document.getElementById('featuredReport').innerHTML = '';
+            const featuredDiv = document.getElementById('featuredReport');
+            if (featuredDiv) featuredDiv.innerHTML = '';
 
             Promise.all([
                 db.ref('stats').once('value'),
@@ -1012,26 +1083,30 @@
                     <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${Object.keys(reportsData).length}</span><p class="text-sm">كل البلاغات</p></div>
                     <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${pageViews}</span><p class="text-sm">زائر</p></div>`;
 
-                const activeReports = Object.entries(reportsData).filter(([,r]) => isReportActive(r));
-                if (activeReports.length > 0) {
-                    const [featuredId, featured] = activeReports[Math.floor(Math.random() * activeReports.length)];
-                    document.getElementById('featuredReport').innerHTML = `
-                        <div class="card glass p-4 mt-4 cursor-pointer" onclick="openReportDetail('${featuredId}')">
-                            <h3 class="font-bold text-lg">📌 بلاغ مميز</h3>
-                            <p class="font-semibold">${featured.title}</p>
-                            <p class="text-sm text-gray-500">${featured.description?.slice(0,100)}</p>
-                        </div>`;
+                if (featuredDiv) {
+                    const activeReports = Object.entries(reportsData).filter(([,r]) => isReportActive(r));
+                    if (activeReports.length > 0) {
+                        const [featuredId, featured] = activeReports[Math.floor(Math.random() * activeReports.length)];
+                        featuredDiv.innerHTML = `
+                            <div class="card glass p-4 mt-4 cursor-pointer" onclick="openReportDetail('${featuredId}')">
+                                <h3 class="font-bold text-lg">📌 بلاغ مميز</h3>
+                                <p class="font-semibold">${featured.title}</p>
+                                <p class="text-sm text-gray-500">${featured.description?.slice(0,100)}</p>
+                            </div>`;
+                    }
                 }
 
-                const ctx = document.getElementById('categoryChart').getContext('2d');
-                dashboardChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(categories).map(k => typeMap[k]?.label || k),
-                        datasets: [{ label: 'عدد البلاغات', data: Object.values(categories), backgroundColor: '#e10600' }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: true }
-                });
+                const ctx = document.getElementById('categoryChart')?.getContext('2d');
+                if (ctx) {
+                    dashboardChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(categories).map(k => typeMap[k]?.label || k),
+                            datasets: [{ label: 'عدد البلاغات', data: Object.values(categories), backgroundColor: '#e10600' }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: true }
+                    });
+                }
             }).catch(err => {
                 console.error('Dashboard error:', err);
                 statsDiv.innerHTML = '<p class="text-red-500 col-span-4">فشل تحميل البيانات – تحقق من قواعد Firebase</p>';
@@ -1042,22 +1117,32 @@
         function listenNotifications(uid) {
             db.ref(`notifications/${uid}`).orderByChild('timestamp').limitToLast(20).on('value', snap => {
                 const data = snap.val();
-                document.getElementById('notifDot').classList.toggle('hidden', !data);
+                const dot = document.getElementById('notifDot');
+                if (dot) dot.classList.toggle('hidden', !data);
                 const list = document.getElementById('notificationsList');
                 if (!list) return;
                 list.innerHTML = data ? Object.entries(data).sort((a,b)=>b[1].timestamp-a[1].timestamp).map(([,n])=>`<div class="card glass p-2 rounded-lg text-sm">${n.message}<span class="text-xs text-gray-500 block">${formatTimeAgo(n.timestamp)}</span></div>`).join('') : '<p class="text-gray-500">لا توجد إشعارات</p>';
             });
         }
-        document.getElementById('notificationsBtn').onclick = () => document.getElementById('notificationsPanel').classList.toggle('translate-x-full');
-        document.getElementById('closeNotifications').onclick = () => document.getElementById('notificationsPanel').classList.add('translate-x-full');
+        const notifBtn = document.getElementById('notificationsBtn');
+        const notifPanel = document.getElementById('notificationsPanel');
+        if (notifBtn && notifPanel) {
+            notifBtn.onclick = () => notifPanel.classList.toggle('translate-x-full');
+        }
+        const closeNotif = document.getElementById('closeNotifications');
+        if (closeNotif && notifPanel) {
+            closeNotif.onclick = () => notifPanel.classList.add('translate-x-full');
+        }
 
         // ====================== INIT ======================
         window.addEventListener('DOMContentLoaded', () => {
+            if (!firebaseReady) return;
             try {
                 incrementPageView();
                 navigateTo('map');
             } catch (e) {
-                showToast('حدث خطأ أثناء بدء التطبيق', true);
+                console.error('Startup error:', e);
+                showToast('حدث خطأ غير متوقع', true);
             }
         });
     </script>

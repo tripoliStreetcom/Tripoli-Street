@@ -105,8 +105,13 @@
         <!-- Feed Page -->
         <section id="page-feed" class="page-section">
             <div class="p-3">
-                <div class="mb-3">
-                    <input type="text" id="searchInput" placeholder="🔍 بحث عن بلاغ..." class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-red-500 outline-none">
+                <div class="mb-3 flex gap-2">
+                    <input type="text" id="searchInput" placeholder="🔍 بحث عن بلاغ..." class="flex-1 p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-red-500 outline-none">
+                    <button id="sortBtn" class="bg-white dark:bg-gray-700 px-4 rounded-xl border shadow text-sm">↓↑ ترتيب</button>
+                </div>
+                <div class="mb-3" id="distanceFilter" style="display:none">
+                    <label class="text-xs">المسافة القصوى: <span id="distValue">10</span> كم</label>
+                    <input type="range" id="distSlider" min="1" max="50" value="10" class="w-full">
                 </div>
                 <div class="space-y-3" id="feedList"><div class="text-center py-10">جاري التحميل...</div></div>
             </div>
@@ -235,7 +240,12 @@
             measurementId: "G-T29LF7EV6W",
             databaseURL: "https://b-b-a-1a517-default-rtdb.firebaseio.com/"
         };
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+            document.body.innerHTML = '<div class="flex items-center justify-center h-screen"><p class="text-red-600 font-bold text-xl">فشل الاتصال بقاعدة البيانات. يرجى المحاولة لاحقاً.</p></div>';
+            throw new Error("Firebase init failed");
+        }
         const auth = firebase.auth();
         const db = firebase.database();
         const storage = firebase.storage();
@@ -318,6 +328,8 @@
         let reportsListenerUnsub = null;
         let mapReady = false;
         let searchQuery = '';
+        let sortMode = 'newest'; // newest, nearest, confirmed
+        let maxDistance = 10; // km
         let lastData = {};
 
         const LIBYA_BOUNDS = [[19.5, 9.4], [33.2, 25.2]];
@@ -376,6 +388,31 @@
                 sessionStorage.setItem('visited', '1');
                 db.ref('stats/pageViews').transaction(count => (count || 0) + 1);
             }
+        }
+
+        // ---------- WEATHER ----------
+        async function fetchWeather(lat, lon) {
+            try {
+                const API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // استبدل بمفتاحك
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=ar`);
+                if (!res.ok) throw new Error('Weather fetch failed');
+                const data = await res.json();
+                document.getElementById('weatherTemp').textContent = Math.round(data.main.temp) + '°C';
+                document.getElementById('weatherDesc').textContent = data.weather[0].description;
+                document.getElementById('weatherWidget').classList.remove('hidden');
+            } catch(e) {
+                document.getElementById('weatherWidget').classList.add('hidden');
+            }
+        }
+
+        // ---------- BOOKMARKS ----------
+        function toggleBookmark(reportId) {
+            if (!currentUser) return showToast('سجل الدخول أولا', true);
+            const ref = db.ref(`users/${currentUser.uid}/bookmarks/${reportId}`);
+            ref.once('value').then(snap => {
+                if (snap.exists()) ref.remove().then(() => showToast('تم إلغاء الحفظ'));
+                else ref.set(true).then(() => showToast('تم حفظ البلاغ'));
+            });
         }
 
         // ====================== AUTH ======================
@@ -531,7 +568,7 @@
             map.on('zoomend', updateMapFromData);
             mapReady = true;
             startLocationWatch();
-            loadWeather();
+            fetchWeather(32.8872, 13.1913);
         }
 
         function shouldShowReport(r) {
@@ -577,15 +614,6 @@
             }
         }
 
-        function loadWeather() {
-            document.getElementById('weatherWidget').innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">☀️</span>
-                    <div><span class="font-bold">28°C</span><br/><span class="text-xs text-gray-500">طرابلس</span></div>
-                </div>`;
-            document.getElementById('weatherWidget').classList.remove('hidden');
-        }
-
         // ====================== REPORTS LISTENER ======================
         let cachedReports = [];
         function startReportsListener() {
@@ -600,7 +628,17 @@
                     const q = searchQuery.toLowerCase();
                     filtered = filtered.filter(([, r]) => (r.title || '').toLowerCase().includes(q) || (r.description || '').toLowerCase().includes(q));
                 }
-                filtered.sort((a,b) => b[1].createdAt - a[1].createdAt);
+                // Apply sort and distance
+                if (sortMode === 'nearest' && userLocationMarker) {
+                    const userLat = userLocationMarker.getLatLng().lat;
+                    const userLng = userLocationMarker.getLatLng().lng;
+                    filtered = filtered.filter(([id, r]) => haversine(userLat, userLng, r.latitude, r.longitude) <= maxDistance);
+                    filtered.sort((a,b) => haversine(userLat, userLng, a[1].latitude, a[1].longitude) - haversine(userLat, userLng, b[1].latitude, b[1].longitude));
+                } else if (sortMode === 'confirmed') {
+                    filtered.sort((a,b) => (b[1].confirmCount||0) - (a[1].confirmCount||0));
+                } else {
+                    filtered.sort((a,b) => b[1].createdAt - a[1].createdAt);
+                }
                 cachedReports = filtered;
                 if (currentPage === 'map' && mapReady) updateMapFromData();
                 if (currentPage === 'feed') updateFeedList(filtered);
@@ -639,16 +677,26 @@
                         <button class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); openReportDetail('${id}')">تفاصيل</button>
                         <button class="text-xs bg-green-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); navigateToReport('${r.latitude}','${r.longitude}')">🚗</button>
                         <button class="text-xs bg-gray-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); shareReport('${window.location.origin}${window.location.pathname}?report=${id}')">📤</button>
+                        <button class="text-xs bg-yellow-500 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); toggleBookmark('${id}')">⭐</button>
                     </div>
                 </div>`).join('') : '<div class="text-center p-8 text-gray-500">لا توجد بلاغات نشطة</div>';
         }
 
-        document.addEventListener('input', (e) => {
-            if (e.target.id === 'searchInput') {
-                searchQuery = e.target.value.trim();
-                stopReportsListener();
-                startReportsListener();
-            }
+        // Sort and distance UI
+        document.getElementById('sortBtn').addEventListener('click', () => {
+            const modes = ['newest', 'nearest', 'confirmed'];
+            const idx = modes.indexOf(sortMode);
+            sortMode = modes[(idx + 1) % modes.length];
+            document.getElementById('sortBtn').textContent = '↓↑ ' + (sortMode === 'newest' ? 'الأحدث' : sortMode === 'nearest' ? 'الأقرب' : 'الأكثر تأكيداً');
+            document.getElementById('distanceFilter').style.display = sortMode === 'nearest' ? 'block' : 'none';
+            stopReportsListener();
+            startReportsListener();
+        });
+        document.getElementById('distSlider').addEventListener('input', (e) => {
+            maxDistance = parseInt(e.target.value);
+            document.getElementById('distValue').textContent = maxDistance;
+            stopReportsListener();
+            startReportsListener();
         });
 
         window.shareReport = function(url) {
@@ -698,6 +746,7 @@
         function renderReportDetail(id, r) {
             const modal = document.getElementById('reportDetailModal');
             const shareUrl = `${window.location.origin}${window.location.pathname}?report=${id}`;
+            const isOwner = currentUser && r.userId === currentUser.uid;
             document.getElementById('detailContent').innerHTML = `
                 <div class="space-y-4">
                     ${r.imageUrl ? `<img src="${r.imageUrl}" class="rounded-xl w-full h-48 object-cover" />` : ''}
@@ -709,6 +758,9 @@
                         <button class="bg-gray-500 text-white px-3 py-1 rounded denyBtn" data-id="${id}">✖ نفي</button>
                         <button class="bg-blue-600 text-white px-3 py-1 rounded" onclick="navigateToReport('${r.latitude}','${r.longitude}')">🚗 توجيه</button>
                         <button class="bg-gray-600 text-white px-3 py-1 rounded" onclick="shareReport('${shareUrl}')">📤 مشاركة</button>
+                        <button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="toggleBookmark('${id}')">⭐ حفظ</button>
+                        ${isOwner ? `<button class="bg-orange-500 text-white px-3 py-1 rounded" onclick="editReport('${id}')">✏️ تعديل</button>` : ''}
+                        ${currentUser ? `<button class="bg-red-700 text-white px-3 py-1 rounded" onclick="deleteReport('${id}')">🗑️ حذف</button>` : ''}
                     </div>
                     <div class="mt-4"><h3 class="font-semibold">💬 التعليقات</h3><div id="commentsContainer" class="space-y-2 mt-2"></div>
                     <textarea id="newComment" class="w-full p-2 rounded border mt-2" rows="2" placeholder="أضف تعليقاً..."></textarea>
@@ -737,7 +789,28 @@
             });
         }
 
-        // ====================== SUBMIT PAGE (FIXED) ======================
+        // Edit & Delete helpers
+        window.editReport = function(reportId) {
+            if (!currentUser) return;
+            // مثال بسيط: يمكنك التوسع لاحقاً
+            const newTitle = prompt('عنوان جديد:', '');
+            if (newTitle) {
+                db.ref(`reports/${reportId}/title`).set(newTitle).then(() => showToast('تم التعديل'));
+            }
+        };
+        window.deleteReport = function(reportId) {
+            if (!currentUser) return;
+            db.ref(`users/${currentUser.uid}/role`).once('value').then(snap => {
+                if (snap.val() === 'admin' || confirm('هل أنت متأكد من حذف البلاغ؟')) {
+                    db.ref(`reports/${reportId}`).remove().then(() => {
+                        showToast('تم الحذف');
+                        document.getElementById('reportDetailModal').classList.add('hidden');
+                    });
+                }
+            });
+        };
+
+        // ====================== SUBMIT PAGE ======================
         let submitFormBuilt = false;
         function renderSubmitForm() {
             if (!currentUser) { showAuthModal(); return; }
@@ -979,8 +1052,14 @@
         document.getElementById('closeNotifications').onclick = () => document.getElementById('notificationsPanel').classList.add('translate-x-full');
 
         // ====================== INIT ======================
-        incrementPageView();
-        navigateTo('map');
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                incrementPageView();
+                navigateTo('map');
+            } catch (e) {
+                showToast('حدث خطأ أثناء بدء التطبيق', true);
+            }
+        });
     </script>
 </body>
 </html>

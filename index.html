@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=yes" />
-    <title>  –  </title>
+    <title>شوارع طرابلس – المنصة الذكية</title>
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU21hcnQgVHJpcG9saSIsInNob3J0X25hbWUiOiJUcmlwb2xpIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiNlMTA2MDAiLCJpY29ucyI6W3sic3JjIjoiaWNvbi0xOTIucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
@@ -47,27 +47,27 @@
     <header class="sticky top-0 z-40 bg-black text-white border-b border-white/10" style="padding-top: env(safe-area-inset-top);">
         <div class="max-w-screen-lg mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-red-400 flex items-center justify-center font-black text-white text-lg">.</div>
-                <span class="font-extrabold text-lg tracking-tight"> </span>
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-red-400 flex items-center justify-center font-black text-white text-lg">ش.ط</div>
+                <span class="font-extrabold text-lg tracking-tight">طرابلس الذكية</span>
             </div>
             <div class="flex items-center gap-2 sm:gap-3">
-                <button id="factBtn" class="p-2 rounded-lg text-white/80 hover:text-white transition" title="  ">
+                <button id="factBtn" class="p-2 rounded-lg text-white/80 hover:text-white transition" title="معلومة عن ليبيا">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 </button>
-                <button id="randomReportBtn" class="p-2 rounded-lg text-white/80 hover:text-white transition" title=" ">
+                <button id="randomReportBtn" class="p-2 rounded-lg text-white/80 hover:text-white transition" title="بلاغ عشوائي">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"/><path d="m9 10 3-3 3 3"/><path d="m9 14 3 3 3-3"/></svg>
                 </button>
                 <button id="notificationsBtn" class="relative p-2 rounded-lg text-white/80 hover:text-white transition">
                     <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden" id="notifDot"></span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 </button>
-                <button id="settingsBtn" class="p-2 rounded-lg text-white/80 hover:text-white transition" title="">
+                <button id="settingsBtn" class="p-2 rounded-lg text-white/80 hover:text-white transition" title="الإعدادات">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 </button>
                 <button id="darkModeToggle" class="p-2 rounded-lg text-white/80 hover:text-white transition">
-                    <span id="darkIcon"></span>
+                    <span id="darkIcon">🌙</span>
                 </button>
-                <button id="authBtn" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full font-semibold transition"></button>
+                <button id="authBtn" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full font-semibold transition">دخول</button>
             </div>
         </div>
     </header>
@@ -80,24 +80,24 @@
                 <div id="mapContainer" class="map-container"></div>
             </div>
             <div class="flex gap-2 mt-3 flex-wrap" id="mapStyles">
-                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="normal"></button>
-                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="dark"></button>
-                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="satellite"> </button>
-                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="hybrid"></button>
-                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="terrain"></button>
-                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow active" data-style="roads"> </button>
+                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="normal">عادي</button>
+                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="dark">داكن</button>
+                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="satellite">قمر صناعي</button>
+                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="hybrid">هجين</button>
+                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow" data-style="terrain">تضاريس</button>
+                <button class="style-btn bg-white dark:bg-gray-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow active" data-style="roads">🛣️ طرق</button>
             </div>
             <div class="flex gap-2 mt-2 flex-wrap" id="filterButtonsContainer"></div>
             <div class="absolute top-3 left-3 z-20 flex flex-col gap-2">
-                <button id="locateBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl"></button>
-                <button id="exploreBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl" title=" "></button>
-                <button id="randomStreetBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl" title=" "></button>
-                <button id="fullscreenBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl"></button>
+                <button id="locateBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl">📍</button>
+                <button id="exploreBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl" title="استكشف ليبيا">🧭</button>
+                <button id="randomStreetBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl" title="اكتشف شارعاً">🛣️</button>
+                <button id="fullscreenBtn" class="bg-white dark:bg-gray-800 p-2 rounded-full shadow text-xl">⛶</button>
             </div>
             <div id="weatherWidget" class="absolute top-3 right-3 z-20 glass rounded-2xl p-3 text-xs hidden shadow-lg">
                 <div class="flex items-center gap-2">
-                    <span class="text-xl"></span>
-                    <div><span class="font-bold">28°C</span><br/><span class="text-gray-500"></span></div>
+                    <span class="text-xl">☀️</span>
+                    <div><span class="font-bold">28°C</span><br/><span class="text-gray-500">مشمس</span></div>
                 </div>
             </div>
         </section>
@@ -106,9 +106,9 @@
         <section id="page-feed" class="page-section">
             <div class="p-3">
                 <div class="mb-3">
-                    <input type="text" id="searchInput" placeholder="   ..." class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-red-500 outline-none">
+                    <input type="text" id="searchInput" placeholder="🔍 بحث عن بلاغ..." class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-red-500 outline-none">
                 </div>
-                <div class="space-y-3" id="feedList"><div class="text-center py-10"> ...</div></div>
+                <div class="space-y-3" id="feedList"><div class="text-center py-10">جاري التحميل...</div></div>
             </div>
         </section>
 
@@ -125,7 +125,7 @@
         <!-- Dashboard Page -->
         <section id="page-dashboard" class="page-section">
             <div class="p-4" id="dashboardContainer">
-                <h2 class="text-2xl font-bold mb-4">  </h2>
+                <h2 class="text-2xl font-bold mb-4">📊 لوحة التحكم</h2>
                 <div id="dashboardStats" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
                 <div id="featuredReport" class="mt-6"></div>
                 <canvas id="categoryChart" class="mt-6 max-h-64"></canvas>
@@ -138,25 +138,25 @@
         <div class="max-w-screen-lg mx-auto grid grid-cols-5 h-16">
             <button data-nav="map" class="nav-btn flex flex-col items-center justify-center gap-0.5 text-gray-500 transition-colors active-tab">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>
-                <span class="text-[11px] font-bold"></span>
+                <span class="text-[11px] font-bold">الخريطة</span>
             </button>
             <button data-nav="feed" class="nav-btn flex flex-col items-center justify-center gap-0.5 text-gray-500">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12h11"/><path d="M10 18h11"/><path d="M10 6h11"/><path d="M4 10h2"/><path d="M4 6h1v4"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
-                <span class="text-[11px] font-bold"></span>
+                <span class="text-[11px] font-bold">التحديثات</span>
             </button>
             <button data-nav="submit" class="nav-btn flex flex-col items-center justify-center gap-0.5 text-gray-500">
                 <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-red-400 rounded-full flex items-center justify-center text-white shadow-lg shadow-red-500/30 -mt-1">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                 </div>
-                <span class="text-[11px] font-bold"></span>
+                <span class="text-[11px] font-bold">بلّغ</span>
             </button>
             <button data-nav="profile" class="nav-btn flex flex-col items-center justify-center gap-0.5 text-gray-500">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span class="text-[11px] font-bold"></span>
+                <span class="text-[11px] font-bold">حسابي</span>
             </button>
             <button data-nav="dashboard" class="nav-btn flex flex-col items-center justify-center gap-0.5 text-gray-500">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-                <span class="text-[11px] font-bold"> </span>
+                <span class="text-[11px] font-bold">لوحة التحكم</span>
             </button>
         </div>
     </nav>
@@ -167,17 +167,17 @@
     <!-- Auth Modal -->
     <div id="authModal" class="modal-backdrop fixed inset-0 z-[1000] hidden items-center justify-center bg-black/50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl fade-in">
-            <h2 class="text-xl font-bold mb-4 text-center">  /  </h2>
+            <h2 class="text-xl font-bold mb-4 text-center">تسجيل الدخول / إنشاء حساب</h2>
             <form id="authForm" class="space-y-3" autocomplete="off">
                 <input type="email" id="authEmail" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder="example@email.com" required>
-                <input type="password" id="authPassword" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder=" " minlength="6" required>
+                <input type="password" id="authPassword" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder="كلمة المرور" minlength="6" required>
                 <div class="flex gap-2">
-                    <button type="submit" id="signInBtn" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold hover:bg-red-700 transition"></button>
-                    <button type="button" id="signUpBtn" class="flex-1 bg-gray-700 text-white py-2 rounded-xl font-bold hover:bg-gray-800 transition"> </button>
+                    <button type="submit" id="signInBtn" class="flex-1 bg-red-600 text-white py-2 rounded-xl font-bold hover:bg-red-700 transition">دخول</button>
+                    <button type="button" id="signUpBtn" class="flex-1 bg-gray-700 text-white py-2 rounded-xl font-bold hover:bg-gray-800 transition">حساب جديد</button>
                 </div>
             </form>
-            <div class="mt-3"><button id="googleSignInBtn" class="w-full bg-white dark:bg-gray-700 border dark:border-gray-600 py-2 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-600 transition">…   Google</button></div>
-            <button id="closeAuthModal" class="mt-3 text-sm text-gray-500 underline w-full"></button>
+            <div class="mt-3"><button id="googleSignInBtn" class="w-full bg-white dark:bg-gray-700 border dark:border-gray-600 py-2 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-600 transition">… متابعة مع Google</button></div>
+            <button id="closeAuthModal" class="mt-3 text-sm text-gray-500 underline w-full">إلغاء</button>
             <p id="authError" class="text-red-500 text-sm mt-2 hidden"></p>
         </div>
     </div>
@@ -185,24 +185,24 @@
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal-backdrop fixed inset-0 z-[1000] hidden overflow-y-auto p-4 bg-black/50">
         <div class="relative bg-white dark:bg-gray-800 rounded-3xl max-w-lg mx-auto my-8 p-6 fade-in">
-            <button id="closeSettingsModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"></button>
-            <h2 class="text-xl font-bold mb-4"></h2>
+            <button id="closeSettingsModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">✕</button>
+            <h2 class="text-xl font-bold mb-4">الإعدادات</h2>
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <span> </span>
+                    <span>الوضع الليلي</span>
                     <button id="settingsDarkToggle" class="bg-gray-300 dark:bg-green-600 w-12 h-6 rounded-full relative transition">
                         <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform" id="settingsToggleCircle"></span>
                     </button>
                 </div>
                 <div>
-                    <h3 class="font-semibold mb-2"> </h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300"> " "      .          .      .</p>
+                    <h3 class="font-semibold mb-2">حول التطبيق</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">منصة "شوارع طرابلس" الذكية لمراقبة أحوال المدينة لحظة بلحظة. تهدف إلى توفير معلومات مباشرة عن الازدحام والخدمات والطقس والأحداث. طوّرها فريق متطوع من أجل ليبيا.</p>
                 </div>
                 <div>
-                    <h3 class="font-semibold mb-2"> </h3>
+                    <h3 class="font-semibold mb-2">سياسة الخصوصية</h3>
                     <div class="text-sm text-gray-600 dark:text-gray-300 max-h-40 overflow-y-auto border rounded p-2">
-                        <p>      .              .     .      .    Google Firebase  .       Firebase.</p>
-                        <p>       .      .       .</p>
+                        <p>نحن لا نجمع أي بيانات شخصية حساسة. يتم استخدام عنوان البريد الإلكتروني فقط لتسجيل الدخول ولا نشاركه مع أي طرف ثالث. الصور المرفوعة تُخزّن بشكل آمن. يمكنك حذف حسابك في أي وقت. التطبيق يستخدم خدمات Google Firebase لتخزين البيانات. لمزيد من المعلومات، راجع سياسة خصوصية Firebase.</p>
+                        <p>جميع البلاغات المقدمة من المستخدمين تخضع لمراجعة المجتمع. لا نتحمل مسؤولية دقة المعلومات المنشورة. يُحظر نشر محتوى مسيء أو غير قانوني.</p>
                     </div>
                 </div>
             </div>
@@ -212,14 +212,14 @@
     <!-- Report Detail Modal -->
     <div id="reportDetailModal" class="modal-backdrop fixed inset-0 z-[1000] hidden overflow-y-auto p-4 bg-black/50">
         <div class="relative bg-white dark:bg-gray-800 rounded-3xl max-w-lg mx-auto my-8 p-6 fade-in">
-            <button id="closeDetailModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"></button>
+            <button id="closeDetailModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">✕</button>
             <div id="detailContent"></div>
         </div>
     </div>
 
     <!-- Notifications Panel -->
     <div id="notificationsPanel" class="fixed top-0 right-0 z-[1000] h-full w-80 bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 p-4 overflow-y-auto">
-        <div class="flex justify-between mb-4"><h3 class="font-bold text-lg"></h3><button id="closeNotifications" class="text-gray-500 text-xl"></button></div>
+        <div class="flex justify-between mb-4"><h3 class="font-bold text-lg">الإشعارات</h3><button id="closeNotifications" class="text-gray-500 text-xl">✕</button></div>
         <div id="notificationsList" class="space-y-3"></div>
     </div>
 
@@ -242,18 +242,18 @@
 
         // ====================== CONSTANTS ======================
         const REPORT_TYPES = [
-            { id: 'benzine', label: ' ', needsStatus: true, icon: 'fuel' },
-            { id: 'nawafa', label: ' ', needsStatus: true, icon: 'droplet' },
-            { id: 'gas', label: ' ', needsStatus: true, icon: 'flame' },
-            { id: 'sewela', label: ' ', needsStatus: true, icon: 'banknote' },
-            { id: 'accident', label: ' ', needsStatus: false, icon: 'car' },
-            { id: 'danger', label: ' ', needsStatus: false, icon: 'alert-triangle' },
-            { id: 'traffic', label: ' ', needsStatus: false, icon: 'traffic-cone' },
-            { id: 'roadClosed', label: '  ', needsStatus: false, icon: 'construction' },
-            { id: 'electricity', label: ' ', needsStatus: true, icon: 'zap' },
-            { id: 'water', label: ' ', needsStatus: true, icon: 'waves' },
-            { id: 'areaNews', label: '  ', needsStatus: false, icon: 'newspaper' },
-            { id: 'generalNews', label: '  ', needsStatus: false, icon: 'rss' }
+            { id: 'benzine', label: '⛽ بنزين', needsStatus: true, icon: 'fuel' },
+            { id: 'nawafa', label: '🛢 نافطة', needsStatus: true, icon: 'droplet' },
+            { id: 'gas', label: '🔥 غاز', needsStatus: true, icon: 'flame' },
+            { id: 'sewela', label: '💵 سيولة', needsStatus: true, icon: 'banknote' },
+            { id: 'accident', label: '🚨 حادث', needsStatus: false, icon: 'car' },
+            { id: 'danger', label: '⚠️ خطر', needsStatus: false, icon: 'alert-triangle' },
+            { id: 'traffic', label: '🚗 زحمة', needsStatus: false, icon: 'traffic-cone' },
+            { id: 'roadClosed', label: '🚧 إغلاق طريق', needsStatus: false, icon: 'construction' },
+            { id: 'electricity', label: '⚡ كهرباء', needsStatus: true, icon: 'zap' },
+            { id: 'water', label: '💧 ماء', needsStatus: true, icon: 'waves' },
+            { id: 'areaNews', label: '💬 أخبار المنطقة', needsStatus: false, icon: 'newspaper' },
+            { id: 'generalNews', label: '📰 أخبار عامة', needsStatus: false, icon: 'rss' }
         ];
         const typeMap = Object.fromEntries(REPORT_TYPES.map(t => [t.id, t]));
 
@@ -280,32 +280,32 @@
         };
 
         const LIBYAN_CITIES = [
-            { name: "", lat: 32.8872, lng: 13.1913 },
-            { name: "", lat: 32.1167, lng: 20.0667 },
-            { name: "", lat: 32.3784, lng: 15.0923 },
-            { name: "", lat: 27.0333, lng: 14.4333 },
-            { name: "", lat: 32.4667, lng: 14.5667 },
-            { name: "", lat: 32.7625, lng: 21.7550 },
-            { name: "", lat: 32.0836, lng: 23.9764 }
+            { name: "طرابلس", lat: 32.8872, lng: 13.1913 },
+            { name: "بنغازي", lat: 32.1167, lng: 20.0667 },
+            { name: "مصراتة", lat: 32.3784, lng: 15.0923 },
+            { name: "سبها", lat: 27.0333, lng: 14.4333 },
+            { name: "زليتن", lat: 32.4667, lng: 14.5667 },
+            { name: "البيضاء", lat: 32.7625, lng: 21.7550 },
+            { name: "طبرق", lat: 32.0836, lng: 23.9764 }
         ];
 
         const LIBYA_FACTS = [
-            "         .",
-            "        .",
-            "       .",
-            "       .",
-            "     90%   .",
-            "            ()   2011.",
-            "           ."
+            "ليبيا هي رابع أكبر دولة في أفريقيا من حيث المساحة.",
+            "مدينة غدامس الليبية القديمة مصنفة ضمن التراث العالمي لليونسكو.",
+            "تمتلك ليبيا أكبر احتياطي نفطي مؤكد في أفريقيا.",
+            "مدينة لبدة الكبرى تحتوي على آثار رومانية مذهلة.",
+            "الصحراء الكبرى تغطي أكثر من 90% من مساحة ليبيا.",
+            "علم ليبيا هو العلم الوحيد في العالم الذي يتكون من لون واحد (الأخضر) حتى عام 2011.",
+            "تعتمد ليبيا بشكل كبير على تحلية مياه البحر للحصول على المياه العذبة."
         ];
 
         const TRIPOLI_STREETS = [
-            { name: " ", lat: 32.887, lng: 13.185 },
-            { name: "  ", lat: 32.889, lng: 13.192 },
-            { name: " ", lat: 32.885, lng: 13.178 },
-            { name: " 24 ", lat: 32.891, lng: 13.190 },
-            { name: " ", lat: 32.875, lng: 13.200 },
-            { name: " ", lat: 32.900, lng: 13.180 }
+            { name: "شارع الرشيد", lat: 32.887, lng: 13.185 },
+            { name: "شارع عمر المختار", lat: 32.889, lng: 13.192 },
+            { name: "شارع الاستقلال", lat: 32.885, lng: 13.178 },
+            { name: "شارع 24 ديسمبر", lat: 32.891, lng: 13.190 },
+            { name: "شارع الزاوية", lat: 32.875, lng: 13.200 },
+            { name: "شارع الميناء", lat: 32.900, lng: 13.180 }
         ];
 
         // ====================== GLOBAL STATE ======================
@@ -338,9 +338,9 @@
             t.classList.remove('hidden');
             setTimeout(() => t.classList.add('hidden'), 3000);
         }
-        function formatTimeAgo(ts) { if(!ts) return ''; const s = Math.floor((Date.now()-ts)/1000); if(s<60) return ''; if(s<3600) return Math.floor(s/60)+' '; if(s<86400) return Math.floor(s/3600)+' '; return Math.floor(s/86400)+' '; }
+        function formatTimeAgo(ts) { if(!ts) return ''; const s = Math.floor((Date.now()-ts)/1000); if(s<60) return 'الآن'; if(s<3600) return Math.floor(s/60)+' دقيقة'; if(s<86400) return Math.floor(s/3600)+' ساعة'; return Math.floor(s/86400)+' يوم'; }
         function isReportActive(r) { return r.status === 'active' && (!r.expiresAt || r.expiresAt > Date.now()); }
-        function haversine(lat1,lon1,lat2,lon2){ const R=6371,1=lat1*Math.PI/180,2=lat2*Math.PI/180,=(lat2-lat1)*Math.PI/180,=(lon2-lon1)*Math.PI/180; const a=Math.sin(/2)**2+Math.cos(1)*Math.cos(2)*Math.sin(/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
+        function haversine(lat1,lon1,lat2,lon2){ const R=6371,φ1=lat1*Math.PI/180,φ2=lat2*Math.PI/180,Δφ=(lat2-lat1)*Math.PI/180,Δλ=(lon2-lon1)*Math.PI/180; const a=Math.sin(Δφ/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
         function getDefaultAvatar(name) {
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e10600&color=fff&size=128&rounded=true&bold=true`;
         }
@@ -350,12 +350,12 @@
             if (enable) {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
-                document.getElementById('darkIcon').textContent = '';
+                document.getElementById('darkIcon').textContent = '☀️';
                 document.getElementById('settingsToggleCircle').style.transform = 'translateX(1.5rem)';
             } else {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
-                document.getElementById('darkIcon').textContent = '';
+                document.getElementById('darkIcon').textContent = '🌙';
                 document.getElementById('settingsToggleCircle').style.transform = 'translateX(0)';
             }
         }
@@ -383,23 +383,23 @@
         function showAuthModal() { authModal.classList.remove('hidden'); authModal.classList.add('flex'); }
         function hideAuthModal() { authModal.classList.add('hidden'); authModal.classList.remove('flex'); }
         document.getElementById('closeAuthModal').onclick = hideAuthModal;
-        document.getElementById('googleSignInBtn').onclick = async () => { try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); hideAuthModal(); } catch { showToast('', true); } };
+        document.getElementById('googleSignInBtn').onclick = async () => { try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); hideAuthModal(); } catch { showToast('خطأ', true); } };
         document.getElementById('signInBtn').onclick = async () => {
             const e = document.getElementById('authEmail').value, p = document.getElementById('authPassword').value;
-            try { await auth.signInWithEmailAndPassword(e,p); hideAuthModal(); } catch { showToast(' ', true); }
+            try { await auth.signInWithEmailAndPassword(e,p); hideAuthModal(); } catch { showToast('بيانات خاطئة', true); }
         };
         document.getElementById('signUpBtn').onclick = async () => {
             const e = document.getElementById('authEmail').value, p = document.getElementById('authPassword').value;
-            try { await auth.createUserWithEmailAndPassword(e,p); hideAuthModal(); } catch { showToast('  ', true); }
+            try { await auth.createUserWithEmailAndPassword(e,p); hideAuthModal(); } catch { showToast('خطأ إنشاء الحساب', true); }
         };
         document.getElementById('authForm').addEventListener('submit', e => e.preventDefault());
 
         function updateAuthUI() {
             const btn = document.getElementById('authBtn');
-            if (currentUser) { btn.textContent = currentUser.displayName || currentUser.email?.split('@')[0] || ''; btn.onclick = () => logout(); }
-            else { btn.textContent = ''; btn.onclick = showAuthModal; }
+            if (currentUser) { btn.textContent = currentUser.displayName || currentUser.email?.split('@')[0] || 'حسابي'; btn.onclick = () => logout(); }
+            else { btn.textContent = 'دخول'; btn.onclick = showAuthModal; }
         }
-        async function logout() { await auth.signOut(); currentUser=null; updateAuthUI(); showToast('  '); navigateTo('map'); }
+        async function logout() { await auth.signOut(); currentUser=null; updateAuthUI(); showToast('تم تسجيل الخروج'); navigateTo('map'); }
         auth.onAuthStateChanged(user => {
             currentUser = user;
             updateAuthUI();
@@ -540,7 +540,7 @@
         }
 
         function getMapIcon(type, status) {
-            const info = typeMap[type] || { icon: 'rss', label: '' };
+            const info = typeMap[type] || { icon: 'rss', label: '📍' };
             const iconSvg = typeIcons[info.icon] || typeIcons.rss;
             let bgColor = '#6b7280';
             if (['accident','danger'].includes(type)) bgColor = '#dc2626';
@@ -556,14 +556,14 @@
             let distHtml = '';
             if (userLocationMarker) {
                 const dist = haversine(userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng, r.latitude, r.longitude);
-                distHtml = `<p class="text-xs"> ${dist.toFixed(1)} </p>`;
+                distHtml = `<p class="text-xs">📏 ${dist.toFixed(1)} كم</p>`;
             }
             const shareUrl = `${window.location.origin}${window.location.pathname}?report=${id}`;
             return `<div dir="rtl"><strong>${r.title}</strong><p class="text-xs">${r.description?.slice(0,60)}</p>${distHtml}
                 <div class="flex gap-1 mt-1">
-                    <button class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded" onclick="openReportDetail('${id}')"></button>
-                    <button class="text-xs bg-green-600 text-white px-2 py-0.5 rounded" onclick="navigateToReport('${r.latitude}','${r.longitude}')"></button>
-                    <button class="text-xs bg-gray-600 text-white px-2 py-0.5 rounded" onclick="shareReport('${shareUrl}')"></button>
+                    <button class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded" onclick="openReportDetail('${id}')">تفاصيل</button>
+                    <button class="text-xs bg-green-600 text-white px-2 py-0.5 rounded" onclick="navigateToReport('${r.latitude}','${r.longitude}')">🚗</button>
+                    <button class="text-xs bg-gray-600 text-white px-2 py-0.5 rounded" onclick="shareReport('${shareUrl}')">📤</button>
                 </div></div>`;
         }
 
@@ -580,8 +580,8 @@
         function loadWeather() {
             document.getElementById('weatherWidget').innerHTML = `
                 <div class="flex items-center gap-2">
-                    <span class="text-xl"></span>
-                    <div><span class="font-bold">28°C</span><br/><span class="text-xs text-gray-500"></span></div>
+                    <span class="text-xl">☀️</span>
+                    <div><span class="font-bold">28°C</span><br/><span class="text-xs text-gray-500">طرابلس</span></div>
                 </div>`;
             document.getElementById('weatherWidget').classList.remove('hidden');
         }
@@ -636,11 +636,11 @@
                     <div class="flex justify-between"><span class="text-xs font-bold bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full">${typeMap[r.type]?.label}</span><span class="text-xs">${formatTimeAgo(r.createdAt)}</span></div>
                     <h3 class="font-bold mt-1">${r.title}</h3><p class="text-sm mt-1 text-gray-600 dark:text-gray-300">${r.description?.slice(0,80)}</p>
                     <div class="flex gap-1 mt-2">
-                        <button class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); openReportDetail('${id}')"></button>
-                        <button class="text-xs bg-green-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); navigateToReport('${r.latitude}','${r.longitude}')"></button>
-                        <button class="text-xs bg-gray-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); shareReport('${window.location.origin}${window.location.pathname}?report=${id}')"></button>
+                        <button class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); openReportDetail('${id}')">تفاصيل</button>
+                        <button class="text-xs bg-green-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); navigateToReport('${r.latitude}','${r.longitude}')">🚗</button>
+                        <button class="text-xs bg-gray-600 text-white px-2 py-0.5 rounded" onclick="event.stopPropagation(); shareReport('${window.location.origin}${window.location.pathname}?report=${id}')">📤</button>
                     </div>
-                </div>`).join('') : '<div class="text-center p-8 text-gray-500">   </div>';
+                </div>`).join('') : '<div class="text-center p-8 text-gray-500">لا توجد بلاغات نشطة</div>';
         }
 
         document.addEventListener('input', (e) => {
@@ -653,9 +653,9 @@
 
         window.shareReport = function(url) {
             if (navigator.share) {
-                navigator.share({ title: '  ', url });
+                navigator.share({ title: 'بلاغ شوارع طرابلس', url });
             } else {
-                prompt('  :', url);
+                prompt('انسخ الرابط للمشاركة:', url);
             }
         };
 
@@ -675,7 +675,7 @@
 
         // ====================== RANDOM REPORT ======================
         document.getElementById('randomReportBtn').onclick = () => {
-            if (cachedReports.length === 0) return showToast('  ', true);
+            if (cachedReports.length === 0) return showToast('لا توجد بلاغات', true);
             const [id, report] = cachedReports[Math.floor(Math.random() * cachedReports.length)];
             openReportDetail(id, report);
         };
@@ -690,7 +690,7 @@
             if (!reportData) {
                 db.ref(`reports/${id}`).once('value').then(snap => {
                     if (snap.exists()) renderReportDetail(id, snap.val());
-                    else showToast('  ', true);
+                    else showToast('البلاغ غير موجود', true);
                 });
             } else renderReportDetail(id, reportData);
         }
@@ -703,16 +703,16 @@
                     ${r.imageUrl ? `<img src="${r.imageUrl}" class="rounded-xl w-full h-48 object-cover" />` : ''}
                     <div class="flex justify-between"><h2 class="text-xl font-bold">${r.title}</h2><span class="text-sm bg-gray-200 dark:bg-gray-700 px-2 rounded">${typeMap[r.type]?.label}</span></div>
                     <p class="text-gray-600 dark:text-gray-300">${r.description}</p>
-                    <div class="flex gap-4 text-sm"><span> ${r.confirmCount||0} </span><span> ${r.denyCount||0} </span></div>
+                    <div class="flex gap-4 text-sm"><span>👍 ${r.confirmCount||0} تأكيد</span><span>👎 ${r.denyCount||0} نفي</span></div>
                     <div class="flex gap-2 flex-wrap">
-                        <button class="bg-green-600 text-white px-3 py-1 rounded confirmBtn" data-id="${id}"> </button>
-                        <button class="bg-gray-500 text-white px-3 py-1 rounded denyBtn" data-id="${id}"> </button>
-                        <button class="bg-blue-600 text-white px-3 py-1 rounded" onclick="navigateToReport('${r.latitude}','${r.longitude}')"> </button>
-                        <button class="bg-gray-600 text-white px-3 py-1 rounded" onclick="shareReport('${shareUrl}')"> </button>
+                        <button class="bg-green-600 text-white px-3 py-1 rounded confirmBtn" data-id="${id}">✔ تأكيد</button>
+                        <button class="bg-gray-500 text-white px-3 py-1 rounded denyBtn" data-id="${id}">✖ نفي</button>
+                        <button class="bg-blue-600 text-white px-3 py-1 rounded" onclick="navigateToReport('${r.latitude}','${r.longitude}')">🚗 توجيه</button>
+                        <button class="bg-gray-600 text-white px-3 py-1 rounded" onclick="shareReport('${shareUrl}')">📤 مشاركة</button>
                     </div>
-                    <div class="mt-4"><h3 class="font-semibold"> </h3><div id="commentsContainer" class="space-y-2 mt-2"></div>
-                    <textarea id="newComment" class="w-full p-2 rounded border mt-2" rows="2" placeholder=" ..."></textarea>
-                    <button id="postComment" class="bg-blue-600 text-white px-4 py-1 rounded mt-1"></button></div>
+                    <div class="mt-4"><h3 class="font-semibold">💬 التعليقات</h3><div id="commentsContainer" class="space-y-2 mt-2"></div>
+                    <textarea id="newComment" class="w-full p-2 rounded border mt-2" rows="2" placeholder="أضف تعليقاً..."></textarea>
+                    <button id="postComment" class="bg-blue-600 text-white px-4 py-1 rounded mt-1">نشر</button></div>
                 </div>`;
             modal.classList.remove('hidden');
             document.getElementById('closeDetailModal').onclick = () => modal.classList.add('hidden');
@@ -720,7 +720,7 @@
             document.getElementById('postComment').onclick = () => {
                 const text = document.getElementById('newComment').value.trim();
                 if (!text || !currentUser) return;
-                db.ref(`reports/${id}/comments`).push({ userId: currentUser.uid, displayName: currentUser.displayName || '', text, timestamp: Date.now() });
+                db.ref(`reports/${id}/comments`).push({ userId: currentUser.uid, displayName: currentUser.displayName || 'مستخدم', text, timestamp: Date.now() });
                 document.getElementById('newComment').value = '';
             };
             document.querySelectorAll('.confirmBtn').forEach(b => b.onclick = () => { if(currentUser) db.ref(`reports/${id}/confirmCount`).transaction(c=>(c||0)+1); });
@@ -744,42 +744,42 @@
             const container = document.getElementById('submitFormContainer');
             if (!submitFormBuilt) {
                 container.innerHTML = `
-                    <h2 class="text-2xl font-bold mb-4">  </h2>
+                    <h2 class="text-2xl font-bold mb-4">📢 إبلاغ جديد</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-semibold mb-1"> </label>
+                            <label class="block text-sm font-semibold mb-1">نوع البلاغ</label>
                             <select id="typeSelect" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600">
                                 ${REPORT_TYPES.map(t => `<option value="${t.id}">${t.label}</option>`).join('')}
                             </select>
                         </div>
                         <div id="statusGroup" class="hidden">
-                            <label class="block text-sm font-semibold mb-1"></label>
+                            <label class="block text-sm font-semibold mb-1">الحالة</label>
                             <div class="flex gap-4 mt-1">
-                                <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="available">  </label>
-                                <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="unavailable">  </label>
+                                <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="available"> 🟢 متوفر</label>
+                                <label class="flex items-center gap-1"><input type="radio" name="statusVal" value="unavailable"> 🔴 مفقود</label>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-1"> </label>
-                            <input id="titleInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder=":     " maxlength="60" required>
+                            <label class="block text-sm font-semibold mb-1">عنوان البلاغ</label>
+                            <input id="titleInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" placeholder="مثال: بنزين متوفر في محطة الصريم" maxlength="60" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-1"></label>
-                            <textarea id="descInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" rows="3" placeholder=" ..." required></textarea>
+                            <label class="block text-sm font-semibold mb-1">الوصف</label>
+                            <textarea id="descInput" class="w-full p-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600" rows="3" placeholder="تفاصيل أكثر..." required></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-1">   </label>
+                            <label class="block text-sm font-semibold mb-1">اختر الموقع على الخريطة</label>
                             <div id="miniMapPick" style="height:200px; border-radius:16px;" class="border dark:border-gray-600"></div>
-                            <button type="button" id="useMyLocationBtn" class="mt-2 text-sm text-blue-600 underline">   </button>
+                            <button type="button" id="useMyLocationBtn" class="mt-2 text-sm text-blue-600 underline">📍 استخدم موقعي الحالي</button>
                             <input type="hidden" id="latPick" value="32.8872">
                             <input type="hidden" id="lngPick" value="13.1913">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-1"> ()</label>
+                            <label class="block text-sm font-semibold mb-1">صورة (اختياري)</label>
                             <input type="file" id="reportImage" accept="image/*" class="block w-full text-sm">
                             <img id="imagePreview" class="mt-2 hidden h-32 w-full object-cover rounded-xl" />
                         </div>
-                        <button id="submitReportBtn" class="w-full bg-gradient-to-r from-red-600 to-red-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition"> </button>
+                        <button id="submitReportBtn" class="w-full bg-gradient-to-r from-red-600 to-red-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition">إرسال البلاغ</button>
                     </div>`;
                 submitFormBuilt = true;
 
@@ -815,18 +815,18 @@
                     } else preview.classList.add('hidden');
                 });
 
-                //   
+                // ربط الزر مباشرة
                 document.getElementById('submitReportBtn').addEventListener('click', async () => {
                     const type = typeSelect.value;
                     const title = document.getElementById('titleInput').value.trim();
                     const description = document.getElementById('descInput').value.trim();
-                    if (!title || !description) return showToast('   ', true);
-                    if (title.length < 3) return showToast('  ', true);
+                    if (!title || !description) return showToast('يرجى ملء جميع الحقول', true);
+                    if (title.length < 3) return showToast('العنوان قصير جداً', true);
                     
                     let statusValue = null;
                     if (typeMap[type].needsStatus) {
                         const sel = document.querySelector('input[name="statusVal"]:checked');
-                        if (!sel) return showToast('  ', true);
+                        if (!sel) return showToast('يرجى اختيار الحالة', true);
                         statusValue = sel.value;
                     }
                     const lat = parseFloat(document.getElementById('latPick').value);
@@ -854,14 +854,14 @@
                             imageUrl
                         });
                         db.ref('stats/reportsCount').transaction(c => (c || 0) + 1);
-                        showToast('    ');
+                        showToast('✅ تم إرسال البلاغ بنجاح');
                         setTimeout(() => {
                             if (mapReady) map.setView([lat, lng], 15);
                             navigateTo('map');
                         }, 1000);
                     } catch (err) {
                         console.error('Submit error:', err);
-                        showToast(' .    Firebase', true);
+                        showToast('فشل الإرسال. تأكد من قواعد Firebase', true);
                     }
                 });
             }
@@ -882,17 +882,17 @@
                     <img src="${avatarUrl}" class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-red-500 shadow" onclick="document.getElementById('picUpload').click()">
                     <input type="file" id="picUpload" accept="image/*" class="hidden" onchange="uploadProfilePic()">
                     <h2 class="font-bold text-xl mt-3">${info.displayName || currentUser.email}</h2>
-                    <p class="text-sm text-gray-500">${info.bio || ' '}</p>
-                    <div class="flex justify-center gap-1 mt-2 text-yellow-500 text-lg"> ${profile.reputation || 0}</div>
-                    <button id="logoutBtn" class="mt-4 bg-red-600 px-6 py-2 rounded-full text-white font-semibold shadow hover:bg-red-700 transition"> </button>
+                    <p class="text-sm text-gray-500">${info.bio || 'أضف نبذة'}</p>
+                    <div class="flex justify-center gap-1 mt-2 text-yellow-500 text-lg">⭐ ${profile.reputation || 0}</div>
+                    <button id="logoutBtn" class="mt-4 bg-red-600 px-6 py-2 rounded-full text-white font-semibold shadow hover:bg-red-700 transition">تسجيل خروج</button>
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                        <div class="card glass p-4 rounded-2xl"><span class="block text-3xl font-black">${myCount}</span></div>
-                        <div class="card glass p-4 rounded-2xl"><span class="block text-3xl font-black">${profile.reputation||0}</span></div>
+                        <div class="card glass p-4 rounded-2xl"><span class="block text-3xl font-black">${myCount}</span>بلاغاتي</div>
+                        <div class="card glass p-4 rounded-2xl"><span class="block text-3xl font-black">${profile.reputation||0}</span>السمعة</div>
                     </div>`;
                 document.getElementById('logoutBtn').onclick = logout;
             } catch (err) {
                 console.error(err);
-                container.innerHTML = '<p class="text-red-500">    </p>';
+                container.innerHTML = '<p class="text-red-500">خطأ في تحميل الملف الشخصي</p>';
             }
         }
 
@@ -905,9 +905,9 @@
                 const url = await storageRef.getDownloadURL();
                 await db.ref(`users/${currentUser.uid}/info/photoURL`).set(url);
                 document.querySelector('#profileContainer img').src = url;
-                showToast('  ');
+                showToast('تم تحديث الصورة');
             } catch (e) {
-                showToast('  ', true);
+                showToast('فشل رفع الصورة', true);
             }
         };
 
@@ -916,7 +916,7 @@
             if (!currentUser) { showAuthModal(); return; }
             if (dashboardChart) { dashboardChart.destroy(); dashboardChart = null; }
             const statsDiv = document.getElementById('dashboardStats');
-            statsDiv.innerHTML = '<div class="col-span-4 text-center"> ...</div>';
+            statsDiv.innerHTML = '<div class="col-span-4 text-center">جاري التحميل...</div>';
             document.getElementById('featuredReport').innerHTML = '';
 
             Promise.all([
@@ -934,17 +934,17 @@
                 });
 
                 statsDiv.innerHTML = `
-                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${usersCount}</span><p class="text-sm"></p></div>
-                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${active}</span><p class="text-sm"></p></div>
-                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${Object.keys(reportsData).length}</span><p class="text-sm"> </p></div>
-                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${pageViews}</span><p class="text-sm"></p></div>`;
+                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${usersCount}</span><p class="text-sm">مستخدم</p></div>
+                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${active}</span><p class="text-sm">نشط</p></div>
+                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${Object.keys(reportsData).length}</span><p class="text-sm">كل البلاغات</p></div>
+                    <div class="card glass p-4 rounded-2xl"><span class="text-3xl font-black">${pageViews}</span><p class="text-sm">زائر</p></div>`;
 
                 const activeReports = Object.entries(reportsData).filter(([,r]) => isReportActive(r));
                 if (activeReports.length > 0) {
                     const [featuredId, featured] = activeReports[Math.floor(Math.random() * activeReports.length)];
                     document.getElementById('featuredReport').innerHTML = `
                         <div class="card glass p-4 mt-4 cursor-pointer" onclick="openReportDetail('${featuredId}')">
-                            <h3 class="font-bold text-lg">  </h3>
+                            <h3 class="font-bold text-lg">📌 بلاغ مميز</h3>
                             <p class="font-semibold">${featured.title}</p>
                             <p class="text-sm text-gray-500">${featured.description?.slice(0,100)}</p>
                         </div>`;
@@ -955,13 +955,13 @@
                     type: 'bar',
                     data: {
                         labels: Object.keys(categories).map(k => typeMap[k]?.label || k),
-                        datasets: [{ label: ' ', data: Object.values(categories), backgroundColor: '#e10600' }]
+                        datasets: [{ label: 'عدد البلاغات', data: Object.values(categories), backgroundColor: '#e10600' }]
                     },
                     options: { responsive: true, maintainAspectRatio: true }
                 });
             }).catch(err => {
                 console.error('Dashboard error:', err);
-                statsDiv.innerHTML = '<p class="text-red-500 col-span-4">   –    Firebase</p>';
+                statsDiv.innerHTML = '<p class="text-red-500 col-span-4">فشل تحميل البيانات – تحقق من قواعد Firebase</p>';
             });
         }
 
@@ -972,7 +972,7 @@
                 document.getElementById('notifDot').classList.toggle('hidden', !data);
                 const list = document.getElementById('notificationsList');
                 if (!list) return;
-                list.innerHTML = data ? Object.entries(data).sort((a,b)=>b[1].timestamp-a[1].timestamp).map(([,n])=>`<div class="card glass p-2 rounded-lg text-sm">${n.message}<span class="text-xs text-gray-500 block">${formatTimeAgo(n.timestamp)}</span></div>`).join('') : '<p class="text-gray-500">  </p>';
+                list.innerHTML = data ? Object.entries(data).sort((a,b)=>b[1].timestamp-a[1].timestamp).map(([,n])=>`<div class="card glass p-2 rounded-lg text-sm">${n.message}<span class="text-xs text-gray-500 block">${formatTimeAgo(n.timestamp)}</span></div>`).join('') : '<p class="text-gray-500">لا توجد إشعارات</p>';
             });
         }
         document.getElementById('notificationsBtn').onclick = () => document.getElementById('notificationsPanel').classList.toggle('translate-x-full');
